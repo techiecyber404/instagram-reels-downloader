@@ -1,5 +1,6 @@
 import os
 import subprocess
+import shutil
 import yt_dlp
 from fastapi import FastAPI, Form, HTTPException
 from fastapi.responses import FileResponse
