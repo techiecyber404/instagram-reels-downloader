@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Instagram Reels Downloader</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-black text-white flex flex-col items-center justify-center min-h-screen">
+
+    <div class="max-w-lg w-full bg-gray-900 p-6 rounded-xl shadow-lg text-center">
+
+        <h1 class="text-3xl font-bold text-pink-500">Instagram Reels Downloader</h1>
+
+        <p class="text-gray-400 mt-2">Created by <span class="text-red-400">Techiecyber404</span></p>
+
+        
+
+        <input id="url" type="text" placeholder="Enter Instagram Reel URL" 
+
+            class="mt-4 w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
+
+        
+
+        <button onclick="downloadReel()" 
+
+            class="mt-4 w-full p-3 bg-pink-600 hover:bg-pink-700 rounded font-bold text-white">Download</button>
+
+        
+
+        <div id="status" class="mt-4 text-gray-300"></div>
+
+        <div id="progress-container" class="hidden mt-4 w-full bg-gray-700 rounded h-3">
+
+            <div id="progress-bar" class="h-3 bg-pink-500 rounded" style="width: 0%;"></div>
+
+        </div>
+
+        <a id="download-link" class="hidden mt-4 text-green-400 font-bold" target="_blank">Download Video</a>
+
+    </div>
+
+
+
+    <script>
+
+        async function downloadReel() {
+
+            const url = document.getElementById("url").value;
+
+            const status = document.getElementById("status");
+
+            const downloadLink = document.getElementById("download-link");
+
+            const progressBar = document.getElementById("progress-bar");
+
+            const progressContainer = document.getElementById("progress-container");
+
+            
+
+            if (!url) {
+
+                status.innerText = "Please enter a valid URL!";
+
+                return;
+
+            }
+
+            
+
+            status.innerText = "Downloading... Please wait!";
+
+            progressContainer.classList.remove("hidden");
+
+            progressBar.style.width = "0%";
+
+            
+
+            const formData = new FormData();
+
+            formData.append("url", url);
+
+            
+
+            const response = await fetch("/download/", {
+
+                method: "POST",
+
+                body: formData
+
+            });
+
+            
+
+            let progress = 0;
+
+            const interval = setInterval(() => {
+
+                if (progress < 90) {
+
+                    progress += 10;
+
+                    progressBar.style.width = progress + "%";
+
+                }
+
+            }, 500);
+
+            
+
+            const result = await response.json();
+
+            clearInterval(interval);
+
+            progressBar.style.width = "100%";
+
+            
+
+            if (response.ok) {
+
+                status.innerText = "Download complete! Click below:";
+
+                downloadLink.href = result.download_url;
+
+                downloadLink.innerText = "Download Video";
+
+                downloadLink.classList.remove("hidden");
+
+            } else {
+
+                status.innerText = "Error: " + result.detail;
+
+                progressContainer.classList.add("hidden");
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
